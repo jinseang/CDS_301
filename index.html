@@ -8,289 +8,481 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <style>
+    /* ─── Reset ────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
 
+    /* ─── Design Tokens ────────────────────────────────────────── */
     :root {
-      --ink:      #111111;
-      --ink-mid:  #444444;
-      --ink-dim:  #888888;
-      --paper:    #f4f1eb;
-      --white:    #ffffff;
-      --green:    #1d7a4a;
-      --green-lt: #e6f5ee;
-      --red:      #c0392b;
-      --red-lt:   #fdecea;
-      --amber:    #d97706;
-      --amber-lt: #fef3e2;
-      --border:   #d5cfc4;
+      --garage:     #ffffff;
+      --garage-mid: #f5f4f1;
+      --garage-lt:  #eceae5;
+      --panel:      #e4e1db;
+      --steel:      #d0cdc6;
+      --wire:       #b0ada6;
+
+      --ink:        #1a1918;
+      --ink-mid:    #46433e;
+      --ink-dim:    #88807a;
+
+      --orange:     #d95f0a;
+      --orange-dk:  #b04d08;
+      --orange-glow:rgba(217,95,10,0.10);
+      --green:      #15803d;
+      --green-dk:   #14532d;
+      --green-glow: rgba(21,128,61,0.09);
+      --red:        #c41b1b;
+      --red-dk:     #991b1b;
+      --red-glow:   rgba(196,27,27,0.08);
+      --amber:      #b45309;
+      --amber-glow: rgba(180,83,9,0.09);
+
+      --border:     #d4d0c8;
+      --border-bright: #b0ada6;
+
+      --font-display: 'Bebas Neue', 'Impact', sans-serif;
+      --font-cond:    'Barlow Condensed', sans-serif;
+      --font-body:    'Barlow', sans-serif;
+      --font-mono:    'Share Tech Mono', monospace;
     }
 
+    /* ─── Base ──────────────────────────────────────────────────── */
     body {
-      font-family: 'IBM Plex Sans', sans-serif;
-      background: var(--paper);
+      font-family: var(--font-body);
+      background: var(--garage);
       color: var(--ink);
       line-height: 1.75;
       font-size: 17px;
+      /* Subtle noise texture overlay */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
     }
 
-    /* HEADER */
+    p           { margin-bottom: 18px; color: var(--ink-mid); }
+    p strong    { color: var(--ink); }
+    code        { font-family: var(--font-mono); background: var(--panel); padding: 2px 6px; border-radius: 3px; font-size: 0.85em; color: var(--orange); }
+
+    hr {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--wire), var(--orange), var(--wire), transparent);
+      margin: 60px 0 0;
+      opacity: 0.6;
+    }
+
+    ol.refs {
+      padding-left: 20px;
+      font-size: 0.85rem;
+      color: var(--ink-dim);
+      line-height: 2.2;
+      font-family: var(--font-mono);
+    }
+
+    /* ─── Diagonal stripe accent (like caution tape) ───────────── */
+    .caution-stripe {
+      height: 6px;
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--orange) 0px,
+        var(--orange) 10px,
+        var(--garage) 10px,
+        var(--garage) 20px
+      );
+    }
+
+    /* ─── Header ────────────────────────────────────────────────── */
     header {
-      background: var(--paper);
-      color: var(--ink);
-      padding: 52px 24px 44px;
+      background: var(--garage-mid);
+      padding: 0 24px 44px;
       text-align: center;
       border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
     }
-    header h1 {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: clamp(1.8rem, 5.5vw, 3rem);
-      line-height: 1.2;
-      max-width: 760px;
-      margin: 0 auto 18px;
-      font-style: italic;
+    header::before {
+      content: '';
+      display: block;
+      height: 6px;
+      background: repeating-linear-gradient(-45deg, var(--orange) 0, var(--orange) 10px, #000 10px, #000 20px);
+      margin-bottom: 44px;
     }
-    header h1 em { font-style: normal; color: var(--green); }
-    .h-meta { font-size: 0.88rem; color: var(--ink-dim); line-height: 2; }
-    .h-meta strong { color: var(--ink-mid); font-weight: 500; }
+    /* Faint blueprint grid in header */
+    header::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(249,115,22,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(249,115,22,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
 
-    /* HERO */
+    header h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      line-height: 1.0;
+      max-width: 800px;
+      margin: 0 auto 18px;
+      letter-spacing: 0.04em;
+      position: relative;
+      z-index: 1;
+    }
+    header h1 em { font-style: normal; color: var(--orange); }
+
+    .h-meta         { font-size: 0.82rem; color: var(--ink-dim); line-height: 2; font-family: var(--font-mono); position: relative; z-index: 1; }
+    .h-meta strong  { color: var(--ink-mid); font-weight: 400; }
+
+    /* ─── Hero ──────────────────────────────────────────────────── */
     .hero {
-      background: var(--paper);
-      color: var(--ink);
       padding: 80px 24px 100px;
       text-align: center;
       position: relative;
       overflow: hidden;
       border-bottom: 1px solid var(--border);
+      background: var(--garage);
     }
+    /* Engine glow effect */
     .hero::before {
       content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 60% 40%, rgba(29,122,74,0.08) 0%, transparent 65%),
-                  radial-gradient(ellipse at 20% 80%, rgba(192,57,43,0.06) 0%, transparent 55%);
+      background:
+        radial-gradient(ellipse at 50% 60%, rgba(249,115,22,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 20% 20%, rgba(239,68,68,0.05) 0%, transparent 50%);
       pointer-events: none;
     }
+    /* Speedometer arc decoration */
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -120px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 300px;
+      border: 2px solid rgba(249,115,22,0.08);
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      pointer-events: none;
+    }
+
     .hero-q {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: clamp(2.4rem, 8vw, 5.5rem);
-      line-height: 1.1;
-      font-style: italic;
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 10vw, 7rem);
+      line-height: 1.0;
       position: relative;
       color: var(--ink);
+      letter-spacing: 0.03em;
     }
-    .hero-q .strike {
-      position: relative; display: inline-block;
-    }
+    .hero-q .strike { position: relative; display: inline-block; color: var(--ink-dim); }
     .hero-q .strike::after {
       content: '';
       position: absolute;
-      left: 0; right: 0; top: 55%;
-      height: 5px;
-      background: #E57373;
-      transform: rotate(-2deg);
+      left: -4px; right: -4px; top: 52%;
+      height: 6px;
+      background: var(--red);
+      transform: rotate(-1.5deg);
       border-radius: 2px;
+      box-shadow: 0 0 12px rgba(239,68,68,0.6);
     }
+
     .hero-sub {
       margin-top: 28px;
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(0.85rem, 2vw, 1.05rem);
+      font-family: var(--font-cond);
+      font-size: clamp(0.9rem, 2.5vw, 1.15rem);
       color: var(--ink-dim);
-      letter-spacing: 0.05em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
     }
     .hero-scroll {
       margin-top: 52px;
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: var(--font-mono);
       font-size: 0.78rem;
-      color: var(--ink-dim);
-      letter-spacing: 0.1em;
+      color: var(--orange);
+      letter-spacing: 0.15em;
       animation: bob 2s ease-in-out infinite;
     }
-    @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
 
-    /* MAIN */
-    main { max-width: 780px; margin: 0 auto; padding: 0 24px 100px; }
+    /* ─── Main Content ──────────────────────────────────────────── */
+    main { max-width: 800px; margin: 0 auto; padding: 0 24px 100px; }
 
+    /* Chapter label — like a garage section placard */
     .chapter {
       margin-top: 80px;
       display: flex;
       align-items: center;
       gap: 14px;
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: var(--font-mono);
       font-size: 0.72rem;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--ink-dim);
+      color: var(--orange);
     }
-    .chapter::before { content:''; flex:0 0 32px; height:1px; background:var(--border); }
-    .chapter::after  { content:''; flex:1; height:1px; background:var(--border); }
+    .chapter::before { content: ''; flex: 0 0 24px; height: 1px; background: var(--orange); }
+    .chapter::after  { content: ''; flex: 1;         height: 1px; background: linear-gradient(90deg, var(--orange), transparent); }
 
     h2 {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: clamp(1.5rem, 4vw, 2.2rem);
-      line-height: 1.25;
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      line-height: 1.1;
       margin: 14px 0 20px;
+      letter-spacing: 0.03em;
+      color: var(--ink);
     }
 
-    p { margin-bottom: 18px; color: var(--ink-mid); }
-    p strong { color: var(--ink); }
+    /* ─── Abstract ──────────────────────────────────────────────── */
+    .abstract {
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--orange);
+      background: var(--garage-mid);
+      padding: 28px 28px 28px 32px;
+      margin: 56px 0 0;
+      position: relative;
+    }
+    .abstract::before {
+      content: '//';
+      position: absolute; top: 28px; right: 20px;
+      font-family: var(--font-mono);
+      font-size: 2rem;
+      color: var(--border);
+      line-height: 1;
+    }
+    .abstract-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 12px;
+    }
+    .abstract p { font-size: 0.95rem; margin-bottom: 0; }
 
+    /* ─── Big Number Callout ────────────────────────────────────── */
     .big-num {
-      background: var(--white);
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 28px 32px;
+      background: var(--garage-mid);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--orange);
+      padding: 24px 28px;
       margin: 28px 0;
       display: flex;
       align-items: baseline;
       gap: 16px;
       flex-wrap: wrap;
+      position: relative;
     }
+    /* Corner bolt decoration */
+    .big-num::before, .big-num::after {
+      content: '●';
+      position: absolute;
+      font-size: 6px;
+      color: var(--wire);
+    }
+    .big-num::before { top: 6px; left: 6px; }
+    .big-num::after  { bottom: 6px; right: 6px; }
+
     .big-num .num {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: clamp(2.8rem, 8vw, 4.5rem);
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 9vw, 5rem);
       line-height: 1;
-      font-style: italic;
+      letter-spacing: 0.02em;
     }
-    .big-num .num.green { color: var(--green); }
-    .big-num .num.red   { color: var(--red); }
-    .big-num .num.amber { color: var(--amber); }
+    .big-num .num.green { color: var(--green); text-shadow: 0 0 20px rgba(34,197,94,0.3); }
+    .big-num .num.red   { color: var(--red);   text-shadow: 0 0 20px rgba(239,68,68,0.3); }
+    .big-num .num.amber { color: var(--amber);  text-shadow: 0 0 20px rgba(234,179,8,0.3); }
     .big-num .label {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: var(--ink-mid);
       max-width: 300px;
       line-height: 1.5;
+      font-family: var(--font-cond);
+      letter-spacing: 0.02em;
     }
 
+    /* ─── "But Wait" Pull Quote — like a garage warning sign ───── */
     .but-wait {
-      margin: 48px -8px;
-      padding: 28px 32px;
-      background: var(--white);
-      color: var(--ink);
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      font-family: 'Playfair Display', Georgia, serif;
+      margin: 48px -4px;
+      padding: 24px 28px 24px 32px;
+      background: var(--garage-lt);
+      border-left: 5px solid var(--orange);
+      font-family: var(--font-cond);
       font-size: clamp(1.1rem, 3vw, 1.5rem);
-      font-style: italic;
+      font-weight: 600;
+      letter-spacing: 0.02em;
       line-height: 1.4;
+      color: var(--ink);
+      position: relative;
     }
-    .but-wait em { color: var(--green); font-style: normal; }
+    .but-wait::before {
+      content: '⚠';
+      position: absolute;
+      top: 20px; left: -18px;
+      width: 32px; height: 32px;
+      background: var(--orange);
+      color: #000;
+      font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+    }
+    .but-wait em { color: var(--orange); font-style: normal; }
 
+    /* ─── Verdict Cards ─────────────────────────────────────────── */
     .verdict {
-      padding: 24px 28px;
-      border-radius: 10px;
-      margin: 28px 0;
-      font-size: 0.93rem;
-      line-height: 1.6;
+      padding: 28px 32px;
+      margin: 36px 0;
+      font-size: 1rem;
+      line-height: 1.7;
+      border: 1px solid var(--border);
+      position: relative;
     }
-    .verdict.green { background: var(--green-lt); border-left: 4px solid var(--green); }
-    .verdict.red   { background: var(--red-lt);   border-left: 4px solid var(--red); }
-    .verdict.amber { background: var(--amber-lt); border-left: 4px solid var(--amber); }
+    .verdict.green { background: var(--green-glow); border-left: 6px solid var(--green); }
+    .verdict.red   { background: var(--red-glow);   border-left: 6px solid var(--red);   }
+    .verdict.amber { background: var(--amber-glow); border-left: 6px solid var(--amber); }
+
+    /* Verdict heading — large and punchy like a dashboard readout */
     .verdict strong {
-      display: block;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.78rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+      line-height: 1;
     }
     .verdict.green strong { color: var(--green); }
-    .verdict.red   strong { color: var(--red); }
+    .verdict.red   strong { color: var(--red);   }
     .verdict.amber strong { color: var(--amber); }
 
-    .chart-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px 24px 18px;
-      margin: 32px 0;
-      box-shadow: 0 2px 14px rgba(0,0,0,0.05);
-    }
-    .chart-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
+    /* ─── Scope Badge (🌍 Global / 🇺🇸 U.S.) ──────────────────── */
+    .scope-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 2px;
+      margin-left: 12px;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+    .scope-badge.global { background: rgba(21,128,61,0.10); color: var(--green); border: 1px solid rgba(21,128,61,0.25); }
+    .scope-badge.us     { background: rgba(196,27,27,0.08); color: var(--red);   border: 1px solid rgba(196,27,27,0.20); }
+
+    /* ─── Tooltip hint ──────────────────────────────────────────── */
+    .chart-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
       color: var(--ink-dim);
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+      opacity: 0.8;
+    }
+
+    /* ─── Chart Cards — instrument panel style ──────────────────── */
+    .chart-card {
+      background: var(--garage-mid);
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--orange);
+      padding: 24px 22px 18px;
+      margin: 32px 0;
+      position: relative;
+    }
+    /* Corner screws */
+    .chart-card::before, .chart-card::after {
+      content: '◆';
+      position: absolute;
+      font-size: 7px;
+      color: var(--wire);
+    }
+    .chart-card::before { top: 7px; right: 10px; }
+    .chart-card::after  { bottom: 7px; left: 10px; }
+
+    .chart-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--orange);
       margin-bottom: 6px;
+      opacity: 0.85;
     }
     .chart-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1rem;
+      font-family: var(--font-cond);
+      font-size: 1.05rem;
       font-weight: 700;
       margin-bottom: 18px;
       color: var(--ink);
-      overflow: visible;
-      line-height: 1.4;
+      line-height: 1.35;
+      letter-spacing: 0.02em;
     }
     figcaption {
       margin-top: 14px;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       color: var(--ink-dim);
       border-top: 1px solid var(--border);
       padding-top: 10px;
       line-height: 1.55;
+      font-family: var(--font-mono);
     }
 
+    /* ─── Layout Helpers ────────────────────────────────────────── */
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
 
-    .abstract {
-      border-top: 3px double var(--border);
-      border-bottom: 3px double var(--border);
-      padding: 32px 0;
-      margin: 56px 0 0;
-    }
-    .abstract-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.68rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--ink-dim);
-      margin-bottom: 12px;
-    }
-    .abstract p { font-size: 0.95rem; margin-bottom: 0; }
-
-    hr { border: none; border-top: 1px solid var(--border); margin: 60px 0 0; }
-
-    ol.refs { padding-left: 20px; font-size: 0.85rem; color: var(--ink-mid); line-height: 2.2; }
-
-    footer {
-      background: var(--paper);
-      color: var(--ink-mid);
-      text-align: center;
-      padding: 40px 24px;
-      font-size: 0.82rem;
-      line-height: 2;
-      border-top: 1px solid var(--border);
-    }
-    footer a { color: var(--green); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-    footer strong { color: var(--ink); }
-
+    /* ─── Scroll Reveal Animation ───────────────────────────────── */
     .reveal {
       opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
     }
     .reveal.visible { opacity: 1; transform: none; }
+
+    /* ─── Footer ────────────────────────────────────────────────── */
+    footer {
+      background: var(--garage-mid);
+      color: var(--ink-dim);
+      text-align: center;
+      padding: 40px 24px;
+      font-size: 0.78rem;
+      line-height: 2;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+    }
+    footer::before {
+      content: '';
+      display: block;
+      height: 4px;
+      background: repeating-linear-gradient(-45deg, var(--orange) 0, var(--orange) 8px, #000 8px, #000 16px);
+      margin-bottom: 32px;
+      opacity: 0.6;
+    }
+    footer a        { color: var(--orange); text-decoration: none; }
+    footer a:hover  { color: var(--ink); text-decoration: underline; }
+    footer strong   { color: var(--ink-mid); font-weight: 400; }
   </style>
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     HEADER
+════════════════════════════════════════════════════════════════ -->
 <header>
   <h1>Are Electric Vehicles <em>Really</em> Economical?<br>A Global Data Investigation</h1>
   <div class="h-meta">
-    <div><strong>Chanwoo Shin, Jinseong Choi and Daeyoung Moon</strong></div>
+    <div><strong>Chanwoo Shin &nbsp;·&nbsp; Jinseong Choi &nbsp;·&nbsp; Daeyoung Moon</strong></div>
     <div>George Mason University Korea &nbsp;·&nbsp; CDS 301/501, Spring 2026</div>
   </div>
 </header>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════════════ -->
 <div class="hero">
   <div class="hero-q">
     EVs save you money.<br>
@@ -300,10 +492,14 @@
   <div class="hero-scroll">&#x2193; &nbsp; scroll to find out</div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════════════════════════════ -->
 <main>
 
+  <!-- Abstract -->
   <div class="abstract reveal">
-    <div class="abstract-label">Abstract</div>
+    <div class="abstract-label">// Abstract</div>
     <p>
       Electric vehicles are marketed as the economical future of personal transportation.
       But the real story is more complicated. Using cost data across vehicle segments, ten
@@ -314,16 +510,20 @@
     </p>
   </div>
 
-  <!-- CH 1 -->
-  <div class="chapter reveal">Chapter 1 &mdash; The Sticker Shock</div>
+  <!-- ─────────────────────────────────────────────────────────────
+       CHAPTER 1 — The Sticker Shock
+  ────────────────────────────────────────────────────────────── -->
+  <hr />
+  <div class="chapter reveal">Chapter 1 &mdash; The Sticker Shock <span class="scope-badge us">🇺🇸 U.S. Market</span></div>
   <h2 class="reveal">Let's start with the obvious problem.</h2>
   <p class="reveal">Before you save a single dollar on gas, you have to <strong>buy the thing.</strong> And EVs cost more — in every segment, across every market.</p>
 
   <div class="chart-card reveal">
-    <div class="chart-label">Figure 1 &middot; Bar Chart</div>
+    <div class="chart-hint">💡 Hover over any chart bar or point for exact values</div>
+    <div class="chart-label">Figure 1 · Bar Chart</div>
     <div class="chart-title">Purchase Price: EV vs. Gas vs. Hybrid (USD, before subsidies)</div>
     <canvas id="chart1" height="260"></canvas>
-    <figcaption>Average transaction prices for four vehicle segments. EV premium ranges from ~$8,000 (Compact SUV) to ~$15,000 (Pickup) over equivalent gas vehicles. Source: vehicle_comparison.csv.</figcaption>
+    <figcaption>Average transaction prices for four vehicle segments. EV premium ranges from ~$8,000 (Compact SUV) to ~$15,000 (Pickup, e.g. Ford F-150) over equivalent gas vehicles. Source: vehicle_comparison.csv.</figcaption>
   </div>
 
   <div class="big-num reveal">
@@ -338,7 +538,7 @@
   <p class="reveal">Fair point. The U.S. Inflation Reduction Act offers up to $7,500 off eligible EVs, narrowing the Compact SUV gap to just <strong>$500</strong>.</p>
 
   <div class="chart-card reveal">
-    <div class="chart-label">Figure 2 &middot; Bar Chart</div>
+    <div class="chart-label">Figure 2 · Bar Chart</div>
     <div class="chart-title">Net Purchase Price After Maximum Incentive (USD)</div>
     <canvas id="chart2" height="240"></canvas>
     <figcaption>EV net price after $7,500 federal tax credit. Compact SUV and Medium Sedan EVs reach near-parity with gas after subsidy. Source: vehicle_comparison.csv.</figcaption>
@@ -349,14 +549,16 @@
     After subsidies, EVs reach near price parity in the Compact and Sedan segments. Trucks and large SUVs still carry a $7,500–$15,000 premium even after credits.
   </div>
 
-  <!-- CH 2 -->
+  <!-- ─────────────────────────────────────────────────────────────
+       CHAPTER 2 — The Daily Math
+  ────────────────────────────────────────────────────────────── -->
   <hr />
-  <div class="chapter reveal">Chapter 2 &mdash; The Daily Math</div>
+  <div class="chapter reveal">Chapter 2 &mdash; The Daily Math <span class="scope-badge global">🌍 Global</span></div>
   <h2 class="reveal">OK. But what about every trip to the pump?</h2>
   <p class="reveal">This is where EVs genuinely shine — at least in most countries. But how big the savings are depends almost entirely on <strong>where you live.</strong></p>
 
   <div class="chart-card reveal">
-    <div class="chart-label">Figure 3 &middot; Grouped Bar Chart</div>
+    <div class="chart-label">Figure 3 · Grouped Bar Chart</div>
     <div class="chart-title">Cost per 100 km: EV Charging vs. Gasoline by Country (USD, 2024)</div>
     <canvas id="chart3" height="300"></canvas>
     <figcaption>EV cost assumes 15 kWh/100 km at local electricity tariffs. ICE cost assumes 8 L/100 km at local pump prices. Source: regional_costs.csv.</figcaption>
@@ -378,36 +580,87 @@
     On running costs alone, EVs win everywhere — decisively. The question is whether daily savings are large enough to recoup the upfront premium.
   </div>
 
-  <!-- CH 3 -->
+  <!-- ─────────────────────────────────────────────────────────────
+       CHAPTER 3 — The Long Game
+       Part A: Overview across all powertrains (stacked TCO)
+       Part B: Drill-down on specific models over time (line chart)
+  ────────────────────────────────────────────────────────────── -->
   <hr />
-  <div class="chapter reveal">Chapter 3 &mdash; The Long Game</div>
-  <h2 class="reveal">Tesla Model Y vs. Toyota RAV4: who wins over 10 years?</h2>
-  <p class="reveal">Total Cost of Ownership (TCO) combines depreciation, fuel, maintenance, and insurance — tracked year by year from the moment you drive off the lot.</p>
+  <div class="chapter reveal">Chapter 3 &mdash; The Long Game <span class="scope-badge us">🇺🇸 U.S. Market</span></div>
+  <h2 class="reveal">First — what does 15-year ownership actually cost?</h2>
+  <p class="reveal">
+    Before comparing specific models, it helps to see the full picture: what does each
+    <em>type</em> of powertrain cost over 15 years, and where does the money go?
+    Total Cost of Ownership (TCO) stacks every real expense — vehicle price, financing,
+    fuel, insurance, maintenance, repairs, and taxes — into one number.
+  </p>
 
   <div class="chart-card reveal">
-    <div class="chart-label">Figure 4 &middot; Line Chart</div>
+    <div class="chart-label">Figure 4 · Stacked Bar Chart</div>
+    <div class="chart-title">TCO by Component — All Powertrains (USD, 2025, Small SUV, 15-year ownership)</div>
+    <canvas id="chart4a" height="340"></canvas>
+    <figcaption>
+      15-year TCO broken down by cost component for four powertrain types. Data from Argonne National Lab
+      Autonomie high-efficiency model. Source: TCO_ResultsSpreadsheet-20210412.xlsx · DOI: 10.17038/ES/1780969.
+    </figcaption>
+  </div>
+
+  <div class="two-col reveal" style="margin-top: 8px;">
+    <div class="big-num" style="margin:0">
+      <span class="num green">$83k</span>
+      <span class="label">Hybrid — the lowest 15-year TCO of any powertrain.</span>
+    </div>
+    <div class="big-num" style="margin:0">
+      <span class="num red">$96k</span>
+      <span class="label">BEV 300mi — the most expensive, driven by a $46k vehicle cost.</span>
+    </div>
+  </div>
+
+  <p class="reveal">
+    The stacked bars reveal a key pattern: <strong>EVs don't lose on fuel or maintenance</strong> —
+    they lose on vehicle price. The BEV 300mi pays $46k just for the car, versus $26k for an ICE
+    (Gasoline). Meanwhile, BEV fuel costs ($9.3k) are nearly half of ICE gasoline ($17.5k), and
+    BEV maintenance ($8.9k) is cheaper than any combustion option.
+  </p>
+
+  <div class="but-wait reveal">The vehicle price gap is the whole story. <em>Everything else favours the EV.</em></div>
+
+  <!-- Part B: Model-specific drill-down -->
+  <h2 class="reveal" style="margin-top: 56px;">Now zoom in: Tesla Model Y vs. Toyota RAV4, year by year.</h2>
+  <p class="reveal">
+    With the component picture clear, we can track two real competitors across a 10-year timeline.
+    Cumulative operating costs (depreciation, fuel, maintenance, insurance) accumulate from day one —
+    showing exactly when, if ever, the EV math flips in its favour.
+  </p>
+
+  <div class="chart-card reveal">
+    <div class="chart-label">Figure 5 · Line Chart</div>
     <div class="chart-title">10-Year Cumulative Operating Cost: Tesla Model Y vs. RAV4 (USD)</div>
     <canvas id="chart4" height="320"></canvas>
     <figcaption>Cumulative operating costs (depreciation + maintenance + insurance + fuel). Add $32,500 for EV and $32,000 for Gas at Year 0 for full TCO picture. Note the $8,000 battery spike at Year 8. Source: tco_timeline.json.</figcaption>
   </div>
 
-  <div class="but-wait reveal">Here's the uncomfortable truth: the RAV4 Gas is <em>cheaper every single year</em>.</div>
-
-  <p class="reveal">With similar net purchase prices after subsidy ($32,500 EV vs $32,000 Gas), the EV's higher depreciation means it costs more annually — $11,108 in year 1 vs. the RAV4's $8,852. Then <strong>Year 8</strong> hits: an $8,000 battery replacement blows out any accumulated advantage.</p>
+  <p class="reveal">
+    With near-identical net purchase prices after subsidy ($32,500 EV vs. $32,000 Gas),
+    the EV's higher depreciation means it costs more in year 1 — $11,108 vs. the RAV4's $8,852.
+    Then <strong>Year 8</strong> hits: an $8,000 battery replacement erases any gap that had been closing.
+  </p>
 
   <div class="verdict amber reveal">
     <strong>&#9888; Chapter 3 Verdict</strong>
-    In the U.S. at average mileage, the EV does not break even within 10 years on a pure TCO basis — even after subsidy. Higher depreciation and battery replacement risk are the culprits. But this changes dramatically based on how much you drive.
+    At average U.S. mileage, the EV does not break even within 10 years on a pure TCO basis — even after subsidy. The component breakdown explains why: the vehicle price premium is simply too large for fuel and maintenance savings to overcome at typical driving distances. But that changes dramatically based on how much you drive.
   </div>
 
-  <!-- CH 4 -->
+  <!-- ─────────────────────────────────────────────────────────────
+       CHAPTER 4 — Mileage Is Everything
+  ────────────────────────────────────────────────────────────── -->
   <hr />
-  <div class="chapter reveal">Chapter 4 &mdash; Mileage Is Everything</div>
+  <div class="chapter reveal">Chapter 4 &mdash; Mileage Is Everything <span class="scope-badge us">🇺🇸 U.S. Market</span></div>
   <h2 class="reveal">Drive more, and the EV math flips.</h2>
   <p class="reveal">An EV's savings come from fuel costs. The more you drive, the more you save on electricity vs. gasoline. At low mileage, high depreciation kills the EV's advantage. At high mileage, the EV pulls decisively ahead.</p>
 
   <div class="chart-card reveal">
-    <div class="chart-label">Figure 5 &middot; Line Chart</div>
+    <div class="chart-label">Figure 6 · Line Chart</div>
     <div class="chart-title">5-Year Total Operating Cost by Annual Mileage: EV vs. Gas vs. Hybrid (USD)</div>
     <canvas id="chart5" height="280"></canvas>
     <figcaption>5-year operating cost across six mileage scenarios. The crossover point — where EV becomes cheaper than gas — is around 10,000 miles/year. Source: mileage_sensitivity.csv.</figcaption>
@@ -415,11 +668,11 @@
 
   <div class="two-col reveal">
     <div class="big-num" style="margin:0">
-      <div class="num red" style="font-size:2.4rem">5,000 mi/yr</div>
+      <div class="num red" style="font-size:2.6rem">5,000 mi/yr</div>
       <span class="label">EV costs <strong>$1,675 more</strong> than gas over 5 years. EV loses.</span>
     </div>
     <div class="big-num" style="margin:0">
-      <div class="num green" style="font-size:2.4rem">30,000 mi/yr</div>
+      <div class="num green" style="font-size:2.6rem">30,000 mi/yr</div>
       <span class="label">EV saves <strong>$11,200</strong> over gas. EV wins — clearly.</span>
     </div>
   </div>
@@ -429,14 +682,16 @@
     Break-even mileage is roughly <strong>10,000 miles/year</strong>. Average U.S. drivers do ~15,000 — comfortably in EV-advantage territory. High-mileage commuters and fleet operators benefit the most.
   </div>
 
-  <!-- CH 5 -->
+  <!-- ─────────────────────────────────────────────────────────────
+       CHAPTER 5 — The Government Factor
+  ────────────────────────────────────────────────────────────── -->
   <hr />
-  <div class="chapter reveal">Chapter 5 &mdash; The Government Factor</div>
+  <div class="chapter reveal">Chapter 5 &mdash; The Government Factor <span class="scope-badge global">🌍 Global</span></div>
   <h2 class="reveal">Subsidies can make or break the calculation.</h2>
   <p class="reveal">The U.S. $7,500 credit is just one of many government levers. Norway's VAT exemption is worth ~$9,500. South Korea offers ~$6,200. Some countries give nothing. We modeled what happens to 5-year TCO as the incentive amount changes.</p>
 
   <div class="chart-card reveal">
-    <div class="chart-label">Figure 6 &middot; Line Chart</div>
+    <div class="chart-label">Figure 7 · Line Chart</div>
     <div class="chart-title">5-Year TCO vs. Incentive Amount: EV vs. Gas Break-Even (USD)</div>
     <canvas id="chart6" height="280"></canvas>
     <figcaption>EV and Gas 5-year TCO at five incentive levels. The $5,000 mark is the approximate tipping point where EV becomes cheaper than gas. Source: incentive_impact.csv.</figcaption>
@@ -452,19 +707,31 @@
     Without at least $5,000 in government support, an EV is not economically competitive at average mileage. This explains why EV adoption is highest in heavily subsidized markets.
   </div>
 
-  <!-- CH 6 -->
+  <!-- ─────────────────────────────────────────────────────────────
+       CHAPTER 6 — The Battery Question
+  ────────────────────────────────────────────────────────────── -->
   <hr />
-  <div class="chapter reveal">Chapter 6 &mdash; The Battery Question</div>
+  <div class="chapter reveal">Chapter 6 &mdash; The Battery Question <span class="scope-badge global">🌍 Global</span></div>
   <h2 class="reveal">Nobody talks about this enough.</h2>
   <p class="reveal">Battery degradation is the EV's Achilles heel for long-term ownership. Frequent DC fast-charging at high power degrades battery capacity roughly <strong>twice as fast</strong> as home slow-charging.</p>
 
   <div class="chart-card reveal">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-      <div class="chart-label" style="margin-bottom:0">Figure 7 &middot; Bar Chart</div>
-      <div style="display:flex;gap:12px;font-size:0.7rem;font-family:'IBM Plex Mono',monospace;letter-spacing:0.06em;color:var(--ink-dim);">
-        <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#1d7a4a;display:inline-block;flex-shrink:0;"></span>&#x2265;85% Good</span>
-        <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#d97706;display:inline-block;flex-shrink:0;"></span>80&#x2013;84%</span>
-        <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#c0392b;display:inline-block;flex-shrink:0;"></span>&lt;80% Degraded</span>
+    <!-- Chart header: figure label left, colour legend right -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:8px;">
+      <div class="chart-label" style="margin-bottom:0">Figure 8 · Bar Chart</div>
+      <div style="display:flex; gap:12px; font-size:0.68rem; font-family:var(--font-mono); letter-spacing:0.06em; color:var(--ink-dim);">
+        <span style="display:flex; align-items:center; gap:5px;">
+          <span style="width:10px; height:10px; border-radius:2px; background:#15803d; display:inline-block; flex-shrink:0;"></span>
+          &#x2265;85% Good
+        </span>
+        <span style="display:flex; align-items:center; gap:5px;">
+          <span style="width:10px; height:10px; border-radius:2px; background:#b45309; display:inline-block; flex-shrink:0;"></span>
+          80&#x2013;84%
+        </span>
+        <span style="display:flex; align-items:center; gap:5px;">
+          <span style="width:10px; height:10px; border-radius:2px; background:#c41b1b; display:inline-block; flex-shrink:0;"></span>
+          &lt;80% Degraded
+        </span>
       </div>
     </div>
     <div class="chart-title">Battery Capacity Remaining After 8 Years by Charging Profile (%)</div>
@@ -479,7 +746,9 @@
     Battery degradation is a genuine long-term cost risk — especially for high-mileage drivers who rely on fast charging. The potential $8,000+ replacement is modeled into the Year 8 TCO spike in Chapter 3.
   </div>
 
-  <!-- CONCLUSION -->
+  <!-- ─────────────────────────────────────────────────────────────
+       CONCLUSION
+  ────────────────────────────────────────────────────────────── -->
   <hr />
   <div class="chapter reveal">Conclusion</div>
   <h2 class="reveal">So — is the EV really economical?</h2>
@@ -500,10 +769,12 @@
 
   <div class="but-wait reveal" style="text-align:center">
     For the <em>average global driver</em> — yes.<br>
-    <span style="font-size:0.85em; font-style:normal; color:var(--ink-dim);">Barely. And only with the right conditions.</span>
+    <span style="font-size:0.85em; font-weight:400; color:var(--ink-dim);">Barely. And only with the right conditions.</span>
   </div>
 
-  <!-- METHODOLOGY -->
+  <!-- ─────────────────────────────────────────────────────────────
+       METHODOLOGY
+  ────────────────────────────────────────────────────────────── -->
   <hr />
   <div class="chapter reveal">Methodology &amp; Data Processing</div>
   <h2 class="reveal">How we built this</h2>
@@ -517,7 +788,9 @@
     repository and are fully reproducible.
   </p>
 
-  <!-- REFERENCES -->
+  <!-- ─────────────────────────────────────────────────────────────
+       REFERENCES
+  ────────────────────────────────────────────────────────────── -->
   <hr />
   <div class="chapter reveal">References &amp; Data Sources</div>
   <ol class="refs reveal">
@@ -533,6 +806,9 @@
 
 </main>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════════════════ -->
 <footer>
   <p>This website was created as coursework for
     <strong>CDS 301 / 501: Scientific Information and Data Visualization (Spring 2026) at George Mason University Korea</strong>.
@@ -546,118 +822,241 @@
   </p>
 </footer>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     CHARTS  (Chart.js)
+════════════════════════════════════════════════════════════════ -->
 <script>
-const C_EV  = '#1d7a4a', C_GAS = '#c0392b', C_HYB = '#d97706';
-const C_EV_A  = 'rgba(29,122,74,0.12)', C_GAS_A = 'rgba(192,57,43,0.12)';
-const GRID = 'rgba(0,0,0,0.06)';
-Chart.defaults.font = { family: "'IBM Plex Sans', sans-serif", size: 12 };
-Chart.defaults.color = '#888888';
+  /* ── Shared palette & defaults ─────────────────────────────── */
+  const C_EV    = '#15803d';
+  const C_GAS   = '#c41b1b';
+  const C_HYB   = '#d95f0a';
+  const C_EV_A  = 'rgba(21,128,61,0.12)';
+  const C_GAS_A = 'rgba(196,27,27,0.10)';
+  const GRID    = 'rgba(0,0,0,0.06)';
 
-new Chart('chart1', {
-  type:'bar',
-  data:{
-    labels:['Compact SUV','Medium Sedan','Medium SUV','Pickup'],
-    datasets:[
-      {label:'EV',     data:[40000,38000,55000,70000], backgroundColor:C_EV,  borderRadius:4},
-      {label:'Gas',    data:[32000,30000,45000,55000], backgroundColor:C_GAS, borderRadius:4},
-      {label:'Hybrid', data:[34000,32000,48000,58000], backgroundColor:C_HYB, borderRadius:4},
-    ]
-  },
-  options:{responsive:true,plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>' $'+c.raw.toLocaleString()}}},
-    scales:{y:{ticks:{callback:v=>'$'+(v/1000)+'K'},grid:{color:GRID}},x:{grid:{display:false}}}}
-});
+  Chart.defaults.font  = { family: "'Barlow', sans-serif", size: 12 };
+  Chart.defaults.color = '#88807a';
 
-new Chart('chart2', {
-  type:'bar',
-  data:{
-    labels:['Compact SUV','Medium Sedan','Medium SUV','Pickup'],
-    datasets:[
-      {label:'EV (after $7,500 credit)', data:[32500,30500,47500,62500], backgroundColor:C_EV,  borderRadius:4},
-      {label:'Gas',                      data:[32000,30000,45000,55000], backgroundColor:C_GAS, borderRadius:4},
-      {label:'Hybrid',                   data:[34000,32000,48000,58000], backgroundColor:C_HYB, borderRadius:4},
-    ]
-  },
-  options:{responsive:true,plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>' $'+c.raw.toLocaleString()}}},
-    scales:{y:{min:25000,ticks:{callback:v=>'$'+(v/1000)+'K'},grid:{color:GRID}},x:{grid:{display:false}}}}
-});
+  /* ── Reusable axis/plugin helpers ──────────────────────────── */
+  const kTick    = v => '$' + (v / 1000).toFixed(0) + 'K';
+  const dollarTip = c => ' $' + c.raw.toLocaleString();
+  const centsTip  = c => ' $' + c.raw.toFixed(2);
+  const pctTip    = c => ' ' + c.raw + '%';
 
-new Chart('chart3', {
-  type:'bar',
-  data:{
-    labels:['China','Norway','USA','Canada','France','Japan','UK','Australia','Italy','Germany'],
-    datasets:[
-      {label:'EV ($/100km)',  data:[1.5,1.95,2.25,1.8,3.45,3.75,4.65,4.2,5.4,6.0],   backgroundColor:C_EV,  borderRadius:4},
-      {label:'Gas ($/100km)', data:[8.8,16.8,7.6,10.4,15.2,11.6,14.8,12.8,16.0,15.6], backgroundColor:C_GAS, borderRadius:4},
-    ]
-  },
-  options:{responsive:true,plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>' $'+c.raw.toFixed(2)}}},
-    scales:{y:{ticks:{callback:v=>'$'+v},grid:{color:GRID}},x:{grid:{display:false}}}}
-});
+  const barDefaults  = { borderRadius: 2 };
+  const lineDefaults = { tension: 0.3, pointRadius: 4, borderWidth: 2.5 };
 
-new Chart('chart4', {
-  type:'line',
-  data:{
-    labels:['Yr 1','Yr 2','Yr 3','Yr 4','Yr 5','Yr 6','Yr 7','Yr 8','Yr 9','Yr 10'],
-    datasets:[
-      {label:'Tesla Model Y (EV)', data:[11108,21851,32231,42248,51900,61189,70114,86675,94872,102706],
-       borderColor:C_EV, backgroundColor:C_EV_A, fill:true, tension:0.3, pointRadius:4, borderWidth:2.5},
-      {label:'Toyota RAV4 (Gas)',  data:[8852,17602,26251,34797,43242,51585,59826,67966,76003,83939],
-       borderColor:C_GAS, backgroundColor:C_GAS_A, fill:true, tension:0.3, pointRadius:4, borderWidth:2.5},
-      {label:'RAV4 Hybrid', data:[8691,17220,25586,33789,41830,49708,57424,64978,72369,79598],
-       borderColor:C_HYB, backgroundColor:'rgba(217,119,6,0.07)', fill:true, tension:0.3, pointRadius:4, borderWidth:2, borderDash:[5,4]},
-    ]
-  },
-  options:{responsive:true,plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>' $'+c.raw.toLocaleString()}}},
-    scales:{y:{ticks:{callback:v=>'$'+(v/1000).toFixed(0)+'K'},grid:{color:GRID}},x:{grid:{color:GRID}}}}
-});
+  const barOptions = (yOpts = {}) => ({
+    responsive: true,
+    plugins: {
+      legend: { position: 'top', labels: { color: '#46433e', font: { family: "'Barlow Condensed'" }, color: '#46433e' } },
+      tooltip: { callbacks: { label: dollarTip }, backgroundColor: '#ffffff', borderColor: '#d95f0a', borderWidth: 1, titleColor: '#1a1918', bodyColor: '#46433e' },
+    },
+    scales: {
+      y: { ticks: { callback: kTick, color: '#88807a' }, grid: { color: GRID }, ...yOpts },
+      x: { grid: { display: false }, ticks: { color: '#88807a' } },
+    },
+  });
 
-new Chart('chart5', {
-  type:'line',
-  data:{
-    labels:['5,000','10,000','15,000','20,000','25,000','30,000'],
-    datasets:[
-      {label:'EV 5-yr cost',     data:[34375,35500,36625,37750,38875,40000], borderColor:C_EV,  backgroundColor:'transparent', tension:0.3, pointRadius:5, borderWidth:2.5},
-      {label:'Gas 5-yr cost',    data:[32700,36400,40100,43800,47500,51200], borderColor:C_GAS, backgroundColor:'transparent', tension:0.3, pointRadius:5, borderWidth:2.5},
-      {label:'Hybrid 5-yr cost', data:[31750,34500,37250,40000,42750,45500], borderColor:C_HYB, backgroundColor:'transparent', tension:0.3, pointRadius:5, borderWidth:2, borderDash:[5,4]},
-    ]
-  },
-  options:{responsive:true,plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>' $'+c.raw.toLocaleString()}}},
-    scales:{y:{ticks:{callback:v=>'$'+(v/1000).toFixed(0)+'K'},grid:{color:GRID}},
-      x:{title:{display:true,text:'Annual Miles Driven'},grid:{color:GRID}}}}
-});
+  const lineOptions = (yOpts = {}, xOpts = {}) => ({
+    responsive: true,
+    plugins: {
+      legend: { position: 'top', labels: { color: '#46433e', font: { family: "'Barlow Condensed'" }, color: '#46433e' } },
+      tooltip: { callbacks: { label: dollarTip }, backgroundColor: '#ffffff', borderColor: '#d95f0a', borderWidth: 1, titleColor: '#1a1918', bodyColor: '#46433e' },
+    },
+    scales: {
+      y: { ticks: { callback: kTick, color: '#88807a' }, grid: { color: GRID }, ...yOpts },
+      x: { grid: { color: GRID }, ticks: { color: '#88807a' }, ...xOpts },
+    },
+  });
 
-new Chart('chart6', {
-  type:'line',
-  data:{
-    labels:['$0','$2,500','$5,000','$7,500','$10,000'],
-    datasets:[
-      {label:'EV 5-yr TCO',         data:[40375,39125,37875,36625,35375], borderColor:C_EV,  backgroundColor:C_EV_A, fill:true, tension:0.3, pointRadius:5, borderWidth:2.5},
-      {label:'Gas 5-yr TCO (flat)', data:[38100,38100,38100,38100,38100], borderColor:C_GAS, backgroundColor:'transparent', borderDash:[6,4], tension:0, pointRadius:0, borderWidth:2},
-    ]
-  },
-  options:{responsive:true,plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>' $'+c.raw.toLocaleString()}}},
-    scales:{y:{min:30000,ticks:{callback:v=>'$'+(v/1000).toFixed(0)+'K'},grid:{color:GRID}},
-      x:{title:{display:true,text:'Government Incentive Amount'},grid:{display:false}}}}
-});
+  /* ── Figure 1: Purchase Price (before subsidies) ───────────── */
+  new Chart('chart1', {
+    type: 'bar',
+    data: {
+      labels: ['Compact SUV', 'Medium Sedan', 'Medium SUV', 'Pickup'],
+      datasets: [
+        { label: 'EV',     data: [40000, 38000, 55000, 70000], backgroundColor: C_EV,  ...barDefaults },
+        { label: 'Gas',    data: [32000, 30000, 45000, 55000], backgroundColor: C_GAS, ...barDefaults },
+        { label: 'Hybrid', data: [34000, 32000, 48000, 58000], backgroundColor: C_HYB, ...barDefaults },
+      ],
+    },
+    options: barOptions(),
+  });
 
-const cap = [88,84,76,78,82];
-new Chart('chart7', {
-  type:'bar',
-  data:{
-    labels:['Low DCFC (<12%)','High DCFC Low Pwr','High DCFC High Pwr','Hot Climate','Mild Climate'],
-    datasets:[{
-      label:'Capacity Remaining (%)',
-      data: cap,
-      backgroundColor: cap.map(v => v>=85?C_EV : v>=80?C_HYB : C_GAS),
-      borderRadius:5,
-    }]
-  },
-  options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw+'%'}}},
-    scales:{y:{min:65,max:100,ticks:{callback:v=>v+'%'},grid:{color:GRID}},x:{grid:{display:false},ticks:{maxRotation:35,minRotation:35}}}}
-});
+  /* ── Figure 2: Net Price After $7,500 Federal Credit ───────── */
+  new Chart('chart2', {
+    type: 'bar',
+    data: {
+      labels: ['Compact SUV', 'Medium Sedan', 'Medium SUV', 'Pickup'],
+      datasets: [
+        { label: 'EV (after $7,500 credit)', data: [32500, 30500, 47500, 62500], backgroundColor: C_EV,  ...barDefaults },
+        { label: 'Gas',                      data: [32000, 30000, 45000, 55000], backgroundColor: C_GAS, ...barDefaults },
+        { label: 'Hybrid',                   data: [34000, 32000, 48000, 58000], backgroundColor: C_HYB, ...barDefaults },
+      ],
+    },
+    options: barOptions({ min: 25000 }),
+  });
 
-const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold:0.12});
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  /* ── Figure 3: Running Cost per 100 km by Country ──────────── */
+  new Chart('chart3', {
+    type: 'bar',
+    data: {
+      labels: ['China', 'Norway', 'USA', 'Canada', 'France', 'Japan', 'UK', 'Australia', 'Italy', 'Germany'],
+      datasets: [
+        { label: 'EV ($/100km)',  data: [1.5, 1.95, 2.25, 1.8, 3.45, 3.75, 4.65, 4.2, 5.4, 6.0],    backgroundColor: C_EV,  ...barDefaults },
+        { label: 'Gas ($/100km)', data: [8.8, 16.8, 7.6, 10.4, 15.2, 11.6, 14.8, 12.8, 16.0, 15.6], backgroundColor: C_GAS, ...barDefaults },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top', labels: { color: '#46433e', font: { family: "'Barlow Condensed'" }, color: '#46433e' } },
+        tooltip: { callbacks: { label: centsTip }, backgroundColor: '#ffffff', borderColor: '#d95f0a', borderWidth: 1, titleColor: '#1a1918', bodyColor: '#46433e' },
+      },
+      scales: {
+        y: { ticks: { callback: v => '$' + v, color: '#88807a' }, grid: { color: GRID } },
+        x: { grid: { display: false }, ticks: { color: '#88807a' } },
+      },
+    },
+  });
+
+  /* ── Figure 4 (Stacked): 15-Year TCO by Component — Argonne ── */
+  new Chart('chart4a', {
+    type: 'bar',
+    data: {
+      labels: ['Hybrid', 'ICE\n(Gasoline)', 'ICE\n(Diesel)', 'BEV\n300mi'],
+      datasets: [
+        { label: 'Vehicle',      data: [27400, 26100, 27700, 46000], backgroundColor: '#1d4ed8' },
+        { label: 'Financing',    data: [ 3000,  2900,  3100,  4700], backgroundColor: '#f97316' },
+        { label: 'Fuel',         data: [12400, 17500, 15900,  9300], backgroundColor: '#b91c1c' },
+        { label: 'Insurance',    data: [13400, 13300, 13400, 12900], backgroundColor: '#6d28d9' },
+        { label: 'Maintenance',  data: [14500, 16300, 15700,  8900], backgroundColor: '#15803d' },
+        { label: 'Repair',       data: [ 6500,  7000,  7300,  6800], backgroundColor: '#c41b1b' },
+        { label: 'Tax & fees',   data: [ 5500,  5200,  5400,  7700], backgroundColor: '#6b7280' },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'right', labels: { color: '#46433e', font: { family: "'Barlow Condensed'" }, color: '#46433e' } },
+        tooltip: {
+          backgroundColor: '#ffffff', borderColor: '#d95f0a', borderWidth: 1, titleColor: '#1a1918', bodyColor: '#46433e', footerColor: '#46433e',
+          callbacks: {
+            label: c => ` ${c.dataset.label}: $${(c.raw / 1000).toFixed(1)}k`,
+            footer: items => ` Total: $${(items.reduce((s, i) => s + i.raw, 0) / 1000).toFixed(0)}k`,
+          },
+        },
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { color: '#88807a' } },
+        y: {
+          stacked: true,
+          ticks: { callback: v => '$' + (v / 1000).toFixed(0) + 'k', color: '#88807a' },
+          grid: { color: GRID },
+          max: 100000,
+        },
+      },
+    },
+  });
+
+  /* ── Figure 5: 10-Year Cumulative Operating Cost (TCO) ─────── */
+  new Chart('chart4', {
+    type: 'line',
+    data: {
+      labels: ['Yr 1', 'Yr 2', 'Yr 3', 'Yr 4', 'Yr 5', 'Yr 6', 'Yr 7', 'Yr 8', 'Yr 9', 'Yr 10'],
+      datasets: [
+        {
+          label: 'Tesla Model Y (EV)',
+          data: [11108, 21851, 32231, 42248, 51900, 61189, 70114, 86675, 94872, 102706],
+          borderColor: C_EV, backgroundColor: C_EV_A, fill: true,
+          ...lineDefaults,
+        },
+        {
+          label: 'Toyota RAV4 (Gas)',
+          data: [8852, 17602, 26251, 34797, 43242, 51585, 59826, 67966, 76003, 83939],
+          borderColor: C_GAS, backgroundColor: C_GAS_A, fill: true,
+          ...lineDefaults,
+        },
+      ],
+    },
+    options: lineOptions(),
+  });
+
+  /* ── Figure 6: 5-Year Cost by Annual Mileage ───────────────── */
+  new Chart('chart5', {
+    type: 'line',
+    data: {
+      labels: ['5,000', '10,000', '15,000', '20,000', '25,000', '30,000'],
+      datasets: [
+        { label: 'EV 5-yr cost',     data: [34375, 35500, 36625, 37750, 38875, 40000], borderColor: C_EV,  backgroundColor: 'transparent', ...lineDefaults },
+        { label: 'Gas 5-yr cost',    data: [32700, 36400, 40100, 43800, 47500, 51200], borderColor: C_GAS, backgroundColor: 'transparent', ...lineDefaults },
+        { label: 'Hybrid 5-yr cost', data: [31750, 34500, 37250, 40000, 42750, 45500], borderColor: C_HYB, backgroundColor: 'transparent', ...lineDefaults, borderWidth: 2, borderDash: [5, 4] },
+      ],
+    },
+    options: lineOptions({}, { title: { display: true, text: 'Annual Miles Driven', color: '#88807a' } }),
+  });
+
+  /* ── Figure 7: 5-Year TCO vs. Incentive Amount ─────────────── */
+  new Chart('chart6', {
+    type: 'line',
+    data: {
+      labels: ['$0', '$2,500', '$5,000', '$7,500', '$10,000'],
+      datasets: [
+        {
+          label: 'EV 5-yr TCO',
+          data: [40375, 39125, 37875, 36625, 35375],
+          borderColor: C_EV, backgroundColor: C_EV_A, fill: true,
+          ...lineDefaults,
+        },
+        {
+          label: 'Gas 5-yr TCO (flat)',
+          data: [38100, 38100, 38100, 38100, 38100],
+          borderColor: C_GAS, backgroundColor: 'transparent',
+          borderDash: [6, 4], tension: 0, pointRadius: 0, borderWidth: 2,
+        },
+      ],
+    },
+    options: lineOptions(
+      { min: 30000 },
+      { title: { display: true, text: 'Government Incentive Amount', color: '#88807a' }, grid: { display: false } },
+    ),
+  });
+
+  /* ── Figure 8: Battery Capacity After 8 Years ──────────────── */
+  const batteryData = [88, 84, 76, 78, 82];
+
+  new Chart('chart7', {
+    type: 'bar',
+    data: {
+      labels: ['Low DCFC (<12%)', 'High DCFC Low Pwr', 'High DCFC High Pwr', 'Hot Climate', 'Mild Climate'],
+      datasets: [{
+        label: 'Capacity Remaining (%)',
+        data: batteryData,
+        backgroundColor: batteryData.map(v => v >= 85 ? '#15803d' : v >= 80 ? '#b45309' : '#c41b1b'),
+        borderRadius: 2,
+      }],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: pctTip }, backgroundColor: '#ffffff', borderColor: '#d95f0a', borderWidth: 1, titleColor: '#1a1918', bodyColor: '#46433e' },
+      },
+      scales: {
+        y: { min: 65, max: 100, ticks: { callback: v => v + '%', color: '#88807a' }, grid: { color: GRID } },
+        x: { grid: { display: false }, ticks: { maxRotation: 35, minRotation: 35, color: '#88807a' } },
+      },
+    },
+  });
+
+    /* ── Scroll-reveal: add .visible when element enters viewport ── */
+  const revealObserver = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.12 },
+  );
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 </script>
+
 </body>
 </html>
